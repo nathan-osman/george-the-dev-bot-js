@@ -4,7 +4,6 @@
  */
 
 // Customize these values as necessary
-exports.CONFIG = {
-    email: '',
-    password: '',
-};
+// Customize these values as necessary
+exports.email = '';
+exports.password = '';

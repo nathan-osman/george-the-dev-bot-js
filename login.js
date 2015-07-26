@@ -3,7 +3,8 @@
  * Copyright 2015 - Nathan Osman
  */
 
-var webpage = require('webpage');
+var config  = require('./config'),
+    webpage = require('webpage');
 
 // In order to access the chat pages, the user must first log into their
 // Stack Exchange account. This consists of entering email/password and
@@ -31,11 +32,11 @@ exports.login = function(callback) {
             callback();
         } else {
             loginPage.switchToFrame('affiliate-signin-iframe');
-            loginPage.evaluate(function(cfg) {
-                $('#email').val(cfg.email);
-                $('#password').val(cfg.password);
+            loginPage.evaluate(function(email, password) {
+                $('#email').val(email);
+                $('#password').val(password);
                 $('input[type=submit]').click();
-            }, CONFIG);
+            }, config.email, config.password);
         }
     };
 

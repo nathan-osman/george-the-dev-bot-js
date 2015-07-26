@@ -1,0 +1,10 @@
+/**
+ * George the Dev - Stack Exchange Chatbot
+ * Copyright 2015 - Nathan Osman
+ */
+
+// Customize these values as necessary
+exports.CONFIG = {
+    email: '',
+    password: '',
+};

@@ -3,43 +3,37 @@
  * Copyright 2015 - Nathan Osman
  */
 
-var config  = require('./config'),
-    webpage = require('webpage');
+var webpage = require('webpage');
 
-// In order to access the chat pages, the user must first log into their
-// Stack Exchange account. This consists of entering email/password and
-// proceeding through the confirmation steps. The callback will be invoked
-// when the login succeeds.
-exports.login = function(callback) {
+// When provided with an email address and password, this function will attempt
+// to log the user in. The auth cookies that are set should persist for the
+// current PhantomJS session.
+exports.login = function(email, password, success, error) {
 
-    // Load the initial login page
     var loginPage = webpage.create();
 
-    // Process each step of the login process
     loginPage.onLoadFinished = function(status) {
 
-        // Check for an error
         if(status != 'success') {
-            console.log("Unable to display login page.");
-            phantom.exit();
+            error("Unable to display login page.");
+            return;
         }
 
-        // This technique is fragile but it works for now - just keep
+        // TODO: this technique is fragile but it works for now - just keep
         // feeding in the login credentials and mashing the submit button
         // until the Stack Exchange homepage is loaded
         if(loginPage.url == 'http://stackexchange.com/') {
             loginPage.close();
-            callback();
+            success();
         } else {
             loginPage.switchToFrame('affiliate-signin-iframe');
             loginPage.evaluate(function(email, password) {
                 $('#email').val(email);
                 $('#password').val(password);
                 $('input[type=submit]').click();
-            }, config.email, config.password);
+            }, email, password);
         }
     };
 
-    // Load the page
     loginPage.open('https://stackexchange.com/users/login#log-in');
 };

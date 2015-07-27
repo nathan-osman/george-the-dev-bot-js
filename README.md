@@ -16,4 +16,10 @@ In order to use the bot, you will need an active account on the Stack Exchange n
 
 ### Contributions
 
-[TODO]
+We are happy to accept contributions of new code providing the following criteria are met:
+
+1. the new code should be technically correct (no security issues, etc.)
+2. the new code should provide a useful feature
+3. the new code may not contain any profanity
+
+Pull requests to fix bugs or tweak some of the regular expressions are welcome as well.

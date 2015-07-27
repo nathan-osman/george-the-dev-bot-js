@@ -4,9 +4,10 @@
  */
 
 // Import the various modules
-var api    = require('./api'),
-    config = require('./config'),
-    login  = require('./login');
+var api     = require('./api'),
+    config  = require('./config'),
+    login   = require('./login'),
+    process = require('./process');
 
 // Print the program header
 console.log("=======================================");
@@ -28,10 +29,13 @@ login.login(config.email, config.password, function() {
     api.initialize(function(event) {
 
         // Only respond to direct pings ATM
-        if(event.event_type == 8) {
+        if(event.event_type == 8 || event.event_type == 18) {
             api.acknowledgeMessage(event.message_id);
-            api.sendMessage(event.room_id, ":" + event.message_id +
-                    " I am not able to respond to your message.");
+
+            reply = process.process(event);
+            if(typeof reply !== 'undefined') {
+                api.sendMessage(event.room_id, ":" + event.message_id + " " + reply);
+            }
         }
 
     }, error);

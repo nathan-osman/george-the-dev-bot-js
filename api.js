@@ -23,10 +23,10 @@ chatPage.onInitialized = function() {
 exports.initialize = function(callback, error) {
 
     chatPage.onCallback = callback;
-    chatPage.open('http://chat.stackexchange.com/rooms/1/sandbox' function(status) {
+    chatPage.open('http://chat.stackexchange.com/rooms/1/sandbox', function(status) {
 
         if(status != 'success') {
-            error('Unable to load chat homepage');
+            error('unable to load chat homepage');
             return;
         }
 

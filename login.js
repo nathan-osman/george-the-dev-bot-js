@@ -15,7 +15,7 @@ exports.login = function(email, password, success, error) {
     loginPage.onLoadFinished = function(status) {
 
         if(status != 'success') {
-            error("Unable to display login page.");
+            error("unable to display login page.");
             return;
         }
 

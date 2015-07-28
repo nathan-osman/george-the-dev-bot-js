@@ -41,8 +41,6 @@ console.log("[INFO] loaded " + handlers.length +
 // first handler that matches will be used to process the event.
 exports.process = function(e) {
 
-    // TODO: Ignore any of our own messages
-
     // Remove the '@xxx:' from the beginning
     var m = typeof e.content === 'undefined' ? '' :
             e.content.trim().replace(/^@\w+:?/, '').trim();

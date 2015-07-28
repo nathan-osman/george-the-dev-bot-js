@@ -45,16 +45,21 @@ login.login(config.email, config.password, function() {
 
     console.log("[INFO] authorization complete");
 
-    api.initialize(function(event) {
+    api.initialize(function(e) {
 
-        // Immediately acknowledge any direct messages
-        if(event.event_type == 8 || event.event_type == 18) {
-            api.acknowledgeMessage(event.message_id);
+        // Ignore our own messages
+        if(e.user_id == api.currentUser()) {
+            return;
         }
 
-        reply = process.process(event);
+        // Immediately acknowledge any direct messages
+        if(e.event_type == 8 || e.event_type == 18) {
+            api.acknowledgeMessage(e.message_id);
+        }
+
+        reply = process.process(e);
         if(typeof reply !== 'undefined') {
-            api.sendMessage(event.room_id, ":" + event.message_id + " " + reply);
+            api.sendMessage(e.room_id, ":" + e.message_id + " " + reply);
         }
 
     }, error);

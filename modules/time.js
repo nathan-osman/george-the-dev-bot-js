@@ -22,10 +22,12 @@
  * IN THE SOFTWARE.
  */
 
-exports.process = function(e, m) {
-
-    // Check for the occurrence of "time"
-    if(m.match(/\btime\b/i)) {
-        return "It is currently " + (new Date()).toGMTString() + ".";
+exports.handlers = [
+    {
+        types: [8, 18],
+        pattern: /\btime\b/i,
+        process: function(e, m) {
+            return "It is currently " + (new Date()).toGMTString() + ".";
+        }
     }
-};
+];

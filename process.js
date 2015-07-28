@@ -28,23 +28,42 @@ var modules = [
     'time'
 ];
 
-// Import the modules from the list by generating the import path and replacing
-// the entry in the list with the module's process() function
+// Build a list of handlers from each of the modules
+var handlers = [];
 for(var i = 0; i < modules.length; ++i) {
-    modules[i] = require('./modules/' + modules[i]).process;
+    handlers.push.apply(handlers, require('./modules/' + modules[i]).handlers);
 }
 
-// Given an event, determine the response (if any) to the event.
+console.log("[INFO] loaded " + handlers.length +
+    " handler(s) from " + modules.length + " module(s).");
+
+// Process the provided event by running it through the list of handlers. The
+// first handler that matches will be used to process the event.
 exports.process = function(e) {
 
-    // Remove the '@xxx:' from the beginning
-    m = e.content.trim().replace(/^@\w+:?/, '').trim();
+    // TODO: Ignore any of our own messages
 
-    // If any of the modules is able to process the event, immediately return
-    for(var i = 0; i < modules.length; ++i) {
-        var reply = modules[i](e, m);
-        if(typeof reply !== 'undefined') {
-            return reply;
+    // Remove the '@xxx:' from the beginning
+    var m = typeof e.content === 'undefined' ? '' :
+            e.content.trim().replace(/^@\w+:?/, '').trim();
+
+    // Currently known event types:
+    //  1 - a message was posted
+    //  3 - a user has joined
+    //  4 - a user has left
+    //  8 - @user message
+    // 18 - direct reply to user
+
+    for(var i = 0; i < handlers.length; ++i) {
+        if(handlers[i].types.indexOf(e.event_type) != -1 &&
+                m.match(handlers[i].pattern)) {
+
+            // The process() function will return a string if successful and
+            // undefined if it could not process the message
+            reply = handlers[i].process(e, m);
+            if(typeof reply !== 'undefined') {
+                return reply;
+            }
         }
     }
 };

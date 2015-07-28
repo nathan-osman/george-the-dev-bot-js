@@ -24,15 +24,17 @@
 
 var util = require('./util');
 
-exports.process = function(e, m) {
-
-    // Check for anything that looks like a greeting
-    if(m.match(/^(?:h(?:i|ello)|yo|sup|o\/|\\o(?!\/))/i)) {
-        return util.oneOf(
-            "Yo.",
-            "Hello.",
-            "Howdy!",
-            "Greetings."
-        );
+exports.handlers = [
+    {
+        types: [8, 18],
+        pattern: /^(?:h(?:i|ello)\b|yo\b|o\/|\\o(?!\/))/i,
+        process: function(e, m) {
+            return util.oneOf(
+                "Yo.",
+                "Hello.",
+                "Howdy!",
+                "Greetings."
+            );
+        }
     }
-};
+];

@@ -128,3 +128,16 @@ exports.acknowledgeMessage = function(id) {
         });
     }, id);
 };
+
+// Star a message
+exports.starMessage = function(id) {
+    chatPage.evaluate(function(id) {
+        $.ajax({
+            data: {
+                fkey: fkey().fkey
+            },
+            type: 'POST',
+            url: '/messages/' + id + '/star'
+        });
+    }, id);
+};

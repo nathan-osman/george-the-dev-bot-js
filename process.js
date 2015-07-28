@@ -41,12 +41,20 @@ console.log("[INFO] loaded " + handlers.length +
 // first handler that matches will be used to process the event.
 exports.process = function(e) {
 
-    // Remove the '@xxx:' from the beginning
-    var m = typeof e.content === 'undefined' ? '' :
-            e.content.trim().replace(/^@\w+:?/, '').trim();
+    // Grab the message content if available
+    var m = typeof e.content === 'undefined' ? '' : e.content;
+
+    // Remove the '@xxx:' from the beginning of messages to us
+    if(e.event_type == 8 || e.event_type == 18) {
+        m = m.trim().replace(/^@\w+[:,]?/, '');
+    }
+
+    // Trim any whitespace
+    m = m.trim();
 
     // Currently known event types:
     //  1 - a message was posted
+    //  2 - a message was edited
     //  3 - a user has joined
     //  4 - a user has left
     //  8 - @user message

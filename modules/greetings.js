@@ -26,15 +26,15 @@ var util = require('./util');
 
 exports.handlers = [
     {
-        types: [8, 18],
-        pattern: /^(?:h(?:i|ello)\b|yo\b|o\/|\\o(?!\/))/i,
+        types: [1],
+        pattern: /^h(?:i|ello|ey)(?:,?\s*(?:all|everyone)\.?)?$/i,
         process: function(e, m) {
             return util.oneOf(
-                "Yo.",
-                "Hello.",
-                "Howdy!",
-                "Greetings."
-            );
+                "Hi",
+                "Hello",
+                "Howdy",
+                "Greetings"
+            ) + ", " + e.user_name + ".";
         }
     }
 ];

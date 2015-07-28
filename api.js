@@ -72,10 +72,13 @@ exports.initialize = function(success, error, callback) {
             $(document).ajaxSuccess(function(e, jqXHR, ajaxOptions, data) {
                 if(ajaxOptions.url == '/events') {
                     $.each(data, function(key, value) {
-                        if(key.match(/r(\d+)/)) {
+                        var match = key.match(/r(\d+)/);
+                        if(match) {
                             if('e' in value) {
-                                $.each(value.e, function(index, event) {
-                                    window.callPhantom(event);
+                                $.each(value.e, function(index, e) {
+                                    if(e.room_id == match[1]) {
+                                        window.callPhantom(e);
+                                    }
                                 });
                             }
                         }

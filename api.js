@@ -44,8 +44,11 @@ exports.currentUser = function() {
     return currentUser;
 };
 
-// Create chat page and register callbacks to receive events and errors
-exports.initialize = function(callback, error) {
+// Load a single chat page (the sandbox) which will be used to receive all
+// events as they are received. More rooms can be joined later. Success is
+// invoked once the page loads, error if something goes wrong, and callback
+// when an event is received.
+exports.initialize = function(success, error, callback) {
 
     chatPage.onCallback = callback;
     chatPage.open('http://chat.stackexchange.com/rooms/1/sandbox', function(status) {
@@ -54,6 +57,9 @@ exports.initialize = function(callback, error) {
             error('unable to load chat homepage');
             return;
         }
+
+        // Indicate success
+        success();
 
         // Grab the current user
         currentUser = chatPage.evaluate(function() {
@@ -78,6 +84,21 @@ exports.initialize = function(callback, error) {
             });
         });
     });
+};
+
+// Join the specified room
+exports.join = function(room) {
+    chatPage.evaluate(function(room) {
+        var data = {
+            fkey: fkey().fkey
+        };
+        data['r' + room] = 0;
+        $.ajax({
+            data: data,
+            type: 'POST',
+            url: '/events'
+        });
+    }, room);
 };
 
 // Post the specified message to the specified room

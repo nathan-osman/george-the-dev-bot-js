@@ -45,7 +45,14 @@ login.login(config.email, config.password, function() {
 
     console.log("[INFO] authorization complete");
 
-    api.initialize(function(e) {
+    api.initialize(function() {
+
+        console.log("[INFO] listening for events...");
+
+        // Attempt to join another room
+        api.join(201);
+
+    }, error, function(e) {
 
         // Ignore our own messages
         if(e.user_id == api.currentUser()) {
@@ -62,5 +69,5 @@ login.login(config.email, config.password, function() {
             api.sendMessage(e.room_id, ":" + e.message_id + " " + reply);
         }
 
-    }, error);
+    });
 }, error);

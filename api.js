@@ -53,8 +53,8 @@ exports.initialize = function(success, error, callback) {
             // Grab the event content if available
             var m = typeof e.content === 'undefined' ? '' : e.content;
 
-            // TODO: convert HTML to text
-            // TODO: other stuff
+            // Convert from HTML to text
+            m = $('<div>').html(m).text();
 
             return {
                 e: e,

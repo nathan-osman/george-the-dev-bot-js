@@ -36,7 +36,31 @@ var FAVORITES = {
     "website":          "[Ask Ubuntu](http://askubuntu.com)"
 };
 
+// Retrieve a user's current list of favorites
+function getFavorites(id) {
+    return JSON.parse(localStorage.getItem('favorites-' + id) || "{}");
+}
+
+// Store a user's list of favorites
+function setFavorites(id, favorites) {
+    localStorage.setItem('favorites-' + id, JSON.stringify(favorites));
+}
+
 exports.handlers = [
+    {
+        types: [8, 18],
+        pattern: /^my\s+favou?rite\s+(.*?)\s+(?:is|are)\s+([^.]+)\.?/i,
+        process: function(e, m, match) {
+
+            var thing = match[1].toLowerCase(),
+                value = match[2].toLowerCase().trim();
+
+            // Store the new value
+            var favorites = getFavorites(e.user_id);
+            favorites[thing] = value;
+            setFavorites(e.user_id, favorites);
+        }
+    },
     {
         types: [8, 18],
         pattern: /^wh(?:at|o|ich)('s|\s+(?:is|are))\s+(your|my)\s+favou?rite\s+([^?.]+)[?.]?/i,
@@ -64,14 +88,13 @@ exports.handlers = [
                 }
             } else {
 
-                var key = 'favorites-' + e.user_id;
+                // Load the current list of user favorites
+                var favorites = getFavorites(e.user_id);
 
-                // Check to see if we have favorites for the user
-                if(typeof localStorage[key] !== 'undefined') {
-                    if(thing in localStorage[key]) {
-                        return "Your favorite " + thing + " " + verb +
-                                " " + localStorage[key][thing] + ".";
-                    }
+                // Check to see if the thing exists
+                if(thing in favorites) {
+                    return "Your favorite " + thing + " " + verb +
+                            " " + favorites[thing] + ".";
                 }
 
                 // If we reach here, George doesn't know

@@ -28,8 +28,7 @@ var webpage = require('webpage');
 // facilitating the sending and receiving of messages. This is done by opening
 // a page on the sandbox (George is always there) and then joining other rooms
 // as necessary.
-var chatPage = webpage.create(),
-    currentUser = {};
+var chatPage = webpage.create();
 
 // This little hack prevents the page from using WebSockets by completely
 // disabling the WebSocket constructor
@@ -37,11 +36,6 @@ chatPage.onInitialized = function() {
     chatPage.evaluate(function() {
         window.WebSocket = null;
     });
-};
-
-// Retrieve the current user.
-exports.currentUser = function() {
-    return currentUser;
 };
 
 // Load a single chat page (the sandbox) which will be used to receive all
@@ -59,11 +53,6 @@ exports.initialize = function(success, error, callback) {
         } else {
             success();
         }
-
-        // Grab the current user (using JSON to serialize)
-        currentUser = JSON.parse(chatPage.evaluate(function() {
-            return JSON.serialize(CHAT.RoomUsers.current());
-        }));
 
         chatPage.evaluate(function() {
 

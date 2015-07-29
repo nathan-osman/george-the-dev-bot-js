@@ -4,7 +4,7 @@ George is a lightweight JavaScript-based chatbot designed for the Stack Exchange
 
 ### Usage Instructions
 
-In order to use the bot, you will need an active account on the Stack Exchange network with enough reputation to use chat. You will also need [PhantomJS](http://phantomjs.org) installed.
+In order to use the bot, you will need an active account on the Stack Exchange network with enough reputation to use chat. You will also need [PhantomJS](http://phantomjs.org) installed. (PhantomJS 2.0+ is currently required.)
 
 1. Copy the `config.js.default` to `config.js`
 

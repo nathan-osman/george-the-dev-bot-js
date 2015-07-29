@@ -54,11 +54,6 @@ login.login(config.email, config.password, function() {
 
     }, error, function(e) {
 
-        // Ignore our own messages
-        if(e.user_id == api.currentUser()) {
-            return;
-        }
-
         // Immediately acknowledge any direct messages
         if(e.event_type == 8 || e.event_type == 18) {
             api.acknowledgeMessage(e.message_id);

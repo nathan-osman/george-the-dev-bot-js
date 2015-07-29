@@ -72,11 +72,19 @@ exports.initialize = function(success, error, callback) {
             $(document).ajaxSuccess(function(e, jqXHR, ajaxOptions, data) {
                 if(ajaxOptions.url == '/events') {
                     $.each(data, function(key, value) {
+
+                        // Each response includes events for all of the rooms
+                        // that we're in - leading to duplication - so make
+                        // sure that messages are only processed for the room
+                        // that they were posted to
                         var match = key.match(/r(\d+)/);
                         if(match) {
                             if('e' in value) {
                                 $.each(value.e, function(index, e) {
-                                    if(e.room_id == match[1]) {
+
+                                    // Ignore messages about ourself
+                                    if(e.room_id == match[1] &&
+                                            e.user_id != CHAT.CURRENT_USER_ID) {
                                         window.callPhantom(e);
                                     }
                                 });

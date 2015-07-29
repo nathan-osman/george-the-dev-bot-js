@@ -56,19 +56,22 @@ exports.initialize = function(success, error, callback) {
         if(status != 'success') {
             error('unable to load chat homepage');
             return;
+        } else {
+            success();
         }
-
-        // Indicate success
-        success();
 
         // Grab the current user (using JSON to serialize)
         currentUser = JSON.parse(chatPage.evaluate(function() {
             return JSON.serialize(CHAT.RoomUsers.current());
         }));
 
-        // This really twisted piece of code intercepts all AJAX responses
-        // made by the page and extracts any events and invokes the callback
         chatPage.evaluate(function() {
+
+            // Record the start time
+            var start = parseInt(new Date().getTime()/1000);
+
+            // This really twisted piece of code intercepts all AJAX responses
+            // made by the page and extracts any events and invokes the callback
             $(document).ajaxSuccess(function(e, jqXHR, ajaxOptions, data) {
                 if(ajaxOptions.url == '/events') {
                     $.each(data, function(key, value) {
@@ -78,17 +81,19 @@ exports.initialize = function(success, error, callback) {
                         // sure that messages are only processed for the room
                         // that they were posted to
                         var match = key.match(/r(\d+)/);
-                        if(match) {
-                            if('e' in value) {
-                                $.each(value.e, function(index, e) {
+                        if(match && 'e' in value) {
+                            $.each(value.e, function(index, e) {
 
-                                    // Ignore messages about ourself
-                                    if(e.room_id == match[1] &&
-                                            e.user_id != CHAT.CURRENT_USER_ID) {
-                                        window.callPhantom(e);
-                                    }
-                                });
-                            }
+                                // Only process messages that are:
+                                // - from the same room
+                                // - not made by the current user
+                                // - newer than when we started
+                                if(e.room_id == match[1] &&
+                                        e.user_id != CHAT.CURRENT_USER_ID &&
+                                        e.time_stamp > start) {
+                                    window.callPhantom(e);
+                                }
+                            });
                         }
                     });
                 }

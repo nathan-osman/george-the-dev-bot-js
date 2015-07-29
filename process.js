@@ -22,6 +22,8 @@
  * IN THE SOFTWARE.
  */
 
+var api = require('./api');
+
 // Each of the modules for George to load must be listed here
 var modules = [
     'greetings',
@@ -39,18 +41,7 @@ console.log("[INFO] loaded " + handlers.length +
 
 // Process the provided event by running it through the list of handlers. The
 // first handler that matches will be used to process the event.
-exports.process = function(e) {
-
-    // Grab the message content if available
-    var m = typeof e.content === 'undefined' ? '' : e.content;
-
-    // Remove the '@xxx:' from the beginning of messages to us
-    if(e.event_type == 8 || e.event_type == 18) {
-        m = m.trim().replace(/^@\w+[:,]?/, '');
-    }
-
-    // Trim any whitespace
-    m = m.trim();
+exports.process = function(data) {
 
     // Currently known event types:
     //  1 - a message was posted
@@ -61,14 +52,15 @@ exports.process = function(e) {
     // 18 - direct reply to user
 
     for(var i = 0; i < handlers.length; ++i) {
-        if(handlers[i].types.indexOf(e.event_type) != -1 &&
-                m.match(handlers[i].pattern)) {
+        if(handlers[i].types.indexOf(data.e.event_type) != -1 &&
+                data.m.match(handlers[i].pattern)) {
 
             // The process() function will return a string if successful and
             // undefined if it could not process the message
-            reply = handlers[i].process(e, m);
+            reply = handlers[i].process(data.e, data.m);
             if(typeof reply !== 'undefined') {
-                return reply;
+                api.sendMessage(data.e.room_id, ":" + data.e.message_id + " " + reply);
+                return;
             }
         }
     }

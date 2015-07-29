@@ -49,20 +49,10 @@ login.login(config.email, config.password, function() {
 
         console.log("[INFO] listening for events...");
 
-        // Attempt to join another room
-        api.join(201);
+        // Attempt to join two other rooms
+        api.joinRoom(201);
+        api.joinRoom(26375);
 
-    }, error, function(e) {
 
-        // Immediately acknowledge any direct messages
-        if(e.event_type == 8 || e.event_type == 18) {
-            api.acknowledgeMessage(e.message_id);
-        }
-
-        reply = process.process(e);
-        if(typeof reply !== 'undefined') {
-            api.sendMessage(e.room_id, ":" + e.message_id + " " + reply);
-        }
-
-    });
+    }, error, process.process);
 }, error);

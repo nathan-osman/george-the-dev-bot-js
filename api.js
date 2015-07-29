@@ -26,25 +26,47 @@ var webpage = require('webpage');
 
 // This file contains the code that actually interacts with the chat API,
 // facilitating the sending and receiving of messages. This is done by opening
-// a page on the sandbox (George is always there) and then joining other rooms
-// as necessary.
+// the sandbox and making a websocket connection to receive messages.
 var chatPage = webpage.create();
 
-// This little hack prevents the page from using WebSockets by completely
-// disabling the WebSocket constructor
-chatPage.onInitialized = function() {
-    chatPage.evaluate(function() {
-        window.WebSocket = null;
-    });
-};
+// Pass along anything printed to the console on the page
+chatPage.onConsoleMessage = function(m) {
+    console.log("[PAGE] " + m);
+}
 
-// Load a single chat page (the sandbox) which will be used to receive all
-// events as they are received. More rooms can be joined later. Success is
-// invoked once the page loads, error if something goes wrong, and callback
-// when an event is received.
+// Begin by listening for events in the sandbox. More rooms can be joined
+// later using the joinRoom() method. Success is invoked once the page loads,
+// error if something goes wrong, and callback when an event is received.
 exports.initialize = function(success, error, callback) {
 
-    chatPage.onCallback = callback;
+    // When a message is received from the WebSocket, it needs to be processed
+    // to filter out messages that should not be processed (and avoid
+    // duplication) - this must be done within the context of the page
+    chatPage.onCallback = function(e) {
+        data = chatPage.evaluate(function(e) {
+
+            // Discard the event if it came from us
+            if(e.user_id == CHAT.CURRENT_USER_ID) {
+                return;
+            }
+
+            // Grab the event content if available
+            var m = typeof e.content === 'undefined' ? '' : e.content;
+
+            // TODO: convert HTML to text
+            // TODO: other stuff
+
+            return {
+                e: e,
+                m: m
+            };
+        }, e);
+
+        // Post to the callback if the event was returned
+        data && callback(data);
+    };
+
+    // Open the sandbox
     chatPage.open('http://chat.stackexchange.com/rooms/1/sandbox', function(status) {
 
         if(status != 'success') {
@@ -54,50 +76,52 @@ exports.initialize = function(success, error, callback) {
             success();
         }
 
+        // Create the WebSocket connection
         chatPage.evaluate(function() {
+            $.ajax({
+                data: {
+                    fkey: fkey().fkey,
+                    roomid: 1
+                },
+                success: function(data) {
 
-            // Record the start time
-            var start = parseInt(new Date().getTime()/1000);
+                    // Create the WebSocket connection, ensuring no old
+                    // messages are received by passing a large value
+                    var socket = new WebSocket(data.url + '?l=999999999999');
 
-            // This really twisted piece of code intercepts all AJAX responses
-            // made by the page and extracts any events and invokes the callback
-            $(document).ajaxSuccess(function(e, jqXHR, ajaxOptions, data) {
-                if(ajaxOptions.url == '/events') {
-                    $.each(data, function(key, value) {
+                    // Invoke the callback whenever a new event arrives
+                    socket.onmessage = function(e) {
+                        $.each(JSON.parse(e.data), function(key, value) {
 
-                        // Each response includes events for all of the rooms
-                        // that we're in - leading to duplication - so make
-                        // sure that messages are only processed for the room
-                        // that they were posted to
-                        var match = key.match(/r(\d+)/);
-                        if(match && 'e' in value) {
-                            $.each(value.e, function(index, e) {
-
-                                // Only process messages that are:
-                                // - from the same room
-                                // - not made by the current user
-                                // - newer than when we started
-                                if(e.room_id == match[1] &&
-                                        e.user_id != CHAT.CURRENT_USER_ID &&
-                                        e.time_stamp > start) {
-                                    window.callPhantom(e);
-                                }
-                            });
-                        }
-                    });
-                }
+                            // Each response includes events for all of the
+                            // rooms that we're in, leading to duplication - so
+                            // make sure that messages are only processed for
+                            // the room that they were posted to
+                            var match = key.match(/r(\d+)/);
+                            if(match && 'e' in value) {
+                                $.each(value.e, function(i, e) {
+                                    if(e.room_id == match[1]) {
+                                        window.callPhantom(e);
+                                    }
+                                });
+                            }
+                        });
+                    };
+                },
+                type: 'POST',
+                url: '/ws-auth'
             });
         });
     });
 };
 
 // Join the specified room
-exports.join = function(room) {
+exports.joinRoom = function(room) {
     chatPage.evaluate(function(room) {
         var data = {
             fkey: fkey().fkey
         };
-        data['r' + room] = 0;
+        data['r' + room] = 999999999999;
         $.ajax({
             data: data,
             type: 'POST',
@@ -118,20 +142,6 @@ exports.sendMessage = function(room, message) {
             url: '/chats/' + room + '/messages/new'
         });
     }, room, message);
-};
-
-// Acknowledge receipt of the specified message
-exports.acknowledgeMessage = function(id) {
-    chatPage.evaluate(function(id) {
-        $.ajax({
-            data: {
-                fkey: fkey().fkey,
-                id: id
-            },
-            type: 'POST',
-            url: '/messages/ack'
-        });
-    }, id);
 };
 
 // Star a message

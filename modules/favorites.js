@@ -49,7 +49,7 @@ function setFavorites(id, favorites) {
 exports.handlers = [
     {
         types: [8, 18],
-        pattern: /^my\s+favou?rite\s+(.*?)\s+(?:is|are)\s+([^.]+)\.?/i,
+        pattern: /^my\s+favou?rite\s+(.*?)\s+(?:is|are)\s+(.*[^.])/i,
         process: function(e, m, match) {
 
             var thing = match[1].toLowerCase(),
@@ -63,7 +63,7 @@ exports.handlers = [
     },
     {
         types: [8, 18],
-        pattern: /^wh(?:at|o|ich)('s|\s+(?:is|are))\s+(your|my)\s+favou?rite\s+([^?.]+)[?.]?/i,
+        pattern: /^wh(?:at|o|ich)('s|\s+(?:is|are))\s+(your|my)\s+favou?rite\s+(.*[^?.])/i,
         process: function(e, m, match) {
 
             // Fill in the patterns from the expression

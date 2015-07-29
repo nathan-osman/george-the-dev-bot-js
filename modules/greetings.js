@@ -26,7 +26,7 @@ var util = require('./util');
 
 exports.handlers = [
     {
-        types: [1],
+        types: [1, 8, 18],
         pattern: /^(h(?:i|ello|ey)(?:,?\s*(?:all|everyone)\.?)?|o\/|\\o)$/i,
         process: function(e, m) {
             return util.oneOf(

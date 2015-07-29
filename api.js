@@ -56,6 +56,14 @@ exports.initialize = function(success, error, callback) {
             // Convert from HTML to text
             m = $('<div>').html(m).text();
 
+            // Remove the '@xxx' from type 8 and 18
+            if(e.event_type == 8 || e.event_type == 18) {
+                m = m.replace(/^@\w+[:,]?/, '');
+            }
+
+            // Strip whitespace
+            m = m.trim();
+
             return {
                 e: e,
                 m: m
@@ -95,12 +103,29 @@ exports.initialize = function(success, error, callback) {
 
                             // Each response includes events for all of the
                             // rooms that we're in, leading to duplication - so
-                            // make sure that messages are only processed for
-                            // the room that they were posted to
+                            // make sure that events are only processed for the
+                            // room that they were posted to
                             var match = key.match(/r(\d+)/);
                             if(match && 'e' in value) {
+
+                                // Problem number two - direct messages (type 8
+                                // and 18) are also sent as type 1 - so make
+                                // sure only the type 8/18 events propagate
+                                var seen = {};
+
+                                // Build a set of all non-1 events
                                 $.each(value.e, function(i, e) {
-                                    if(e.room_id == match[1]) {
+                                    if(e.event_type != 1) {
+                                        seen[e.message_id] = null;
+                                    }
+                                });
+
+                                // Send all events *except* type 1 *if* the
+                                // message ID was seen with another type
+                                $.each(value.e, function(i, e) {
+                                    if(e.room_id == match[1] &&
+                                            (e.event_type != 1 ||
+                                            !(e.message_id in seen))) {
                                         window.callPhantom(e);
                                     }
                                 });

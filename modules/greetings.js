@@ -27,14 +27,14 @@ var util = require('./util');
 exports.handlers = [
     {
         types: [1],
-        pattern: /^h(?:i|ello|ey)(?:,?\s*(?:all|everyone)\.?)?$/i,
+        pattern: /^(h(?:i|ello|ey)(?:,?\s*(?:all|everyone)\.?)?|o\/|\\o)$/i,
         process: function(e, m) {
             return util.oneOf(
-                "Hi",
-                "Hello",
-                "Howdy",
-                "Greetings"
-            ) + ", " + e.user_name + ".";
+                "Hi!",
+                "Hello.",
+                "Howdy!",
+                "Greetings."
+            );
         }
     }
 ];

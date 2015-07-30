@@ -55,17 +55,10 @@ exports.process = function(data) {
     for(var i = 0; i < handlers.length; ++i) {
         if(handlers[i].types.indexOf(data.e.event_type) != -1) {
 
-            // Keep the match data
+            // Check for a match and if so, send it off for processing
             var match = data.m.match(handlers[i].pattern);
-
-            if(match) {
-                // The process() function will return a string if successful and
-                // undefined if it could not process the message
-                reply = handlers[i].process(data.e, data.m, match);
-                if(typeof reply !== 'undefined') {
-                    api.sendMessage(data.e.room_id, ":" + data.e.message_id + " " + reply);
-                    return;
-                }
+            if(match && handlers[i].process(data, match)) {
+                return;
             }
         }
     }

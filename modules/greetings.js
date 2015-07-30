@@ -28,13 +28,17 @@ exports.handlers = [
     {
         types: [1, 8, 18],
         pattern: /^(h(?:i|ello|ey)(?:,?\s*(?:all|everyone))?[!.]?|o\/|\\o)$/i,
-        process: function(e, m) {
-            return util.oneOf(
+        process: function(data) {
+
+            // Send a simple reply
+            data.r(util.oneOf(
                 "Hi!",
                 "Hello.",
                 "Howdy!",
                 "Greetings."
-            );
+            ));
+
+            return true;
         }
     }
 ];

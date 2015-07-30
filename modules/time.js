@@ -26,8 +26,9 @@ exports.handlers = [
     {
         types: [8, 18],
         pattern: /\btime\b/i,
-        process: function(e, m) {
-            return "It is currently " + (new Date()).toGMTString() + ".";
+        process: function(data) {
+            data.r("The current time is " + (new Date()).toGMTString() + ".");
+            return true;
         }
     }
 ];

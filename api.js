@@ -70,8 +70,21 @@ exports.initialize = function(success, error, callback) {
             };
         }, e);
 
-        // Post to the callback if the event was returned
-        data && callback(data);
+        // If data was returned, augment the data with methods for sending
+        // replies and posting messages then invoke the callback
+        if(data) {
+
+            // Sends the specified reply either to the OP or to everyone
+            data.r = function(m) {
+                exports.sendMessage(data.e.room_id, ":" + data.e.message_id + " " + m);
+            };
+            data.s = function(m) {
+                exports.sendMessage(data.e.room_id, m);
+            }
+
+            // Invoke the callback
+            callback(data);
+        }
     };
 
     // Open the sandbox

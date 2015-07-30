@@ -22,6 +22,8 @@
  * IN THE SOFTWARE.
  */
 
+var util = require('./util');
+
 // George's favorite things
 var FAVORITES = {
     "city":             "Georgetown",
@@ -50,21 +52,23 @@ exports.handlers = [
     {
         types: [8, 18],
         pattern: /^my\s+favou?rite\s+(.*?)\s+(?:is|are)\s+(.*[^.])/i,
-        process: function(e, m, match) {
+        process: function(data, match) {
 
             var thing = match[1].toLowerCase(),
                 value = match[2].toLowerCase().trim();
 
             // Store the new value
-            var favorites = getFavorites(e.user_id);
+            var favorites = getFavorites(data.e.user_id);
             favorites[thing] = value;
-            setFavorites(e.user_id, favorites);
+            setFavorites(data.e.user_id, favorites);
+
+            return true;
         }
     },
     {
         types: [8, 18],
         pattern: /^wh(?:at|o|ich)('s|\s+(?:is|are))\s+(your|my)\s+favou?rite\s+(.*[^?.])/i,
-        process: function(e, m, match) {
+        process: function(data, match) {
 
             // Fill in the patterns from the expression
             var verb  = match[1].toLowerCase(),
@@ -81,25 +85,30 @@ exports.handlers = [
             // for retrieving user favorites
             if(who == "your") {
                 if(thing in FAVORITES) {
-                    return "My favorite " + thing + " " + verb +
-                            " " + FAVORITES[thing] + ".";
+                    data.r("My favorite " + thing + " " + verb +
+                            " " + FAVORITES[thing] + ".");
                 } else {
-                    return "I don't have a favorite " + thing + ".";
+                    data.r("I don't have a favorite " + thing + ".");
                 }
             } else {
 
                 // Load the current list of user favorites
-                var favorites = getFavorites(e.user_id);
+                var favorites = getFavorites(data.e.user_id);
 
                 // Check to see if the thing exists
                 if(thing in favorites) {
-                    return "Your favorite " + thing + " " + verb +
-                            " " + favorites[thing] + ".";
+                    data.r("Your favorite " + thing + " " + verb +
+                            " " + favorites[thing] + ".");
+                } else {
+                    data.r(util.oneOf(
+                        "How should I know?",
+                        "I don't know.",
+                        "Beats me."
+                    ));
                 }
-
-                // If we reach here, George doesn't know
-                return "How should I know?";
             }
+
+            return true;
         }
     }
 ];

@@ -34,7 +34,7 @@ exports.handlers = [
                 var result = eval(match[1]);
                 data.r(result);
             } catch(e) {
-                data.r("I can't parse your expression (only +, -, *, and / operators are supported).");
+                data.r("Your expression is invalid.");
             }
 
             return true;

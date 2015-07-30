@@ -28,6 +28,7 @@ var api = require('./api');
 var modules = [
     'conversation',
     'favorites',
+    'math',
     'time'
 ];
 

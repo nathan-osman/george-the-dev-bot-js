@@ -25,7 +25,7 @@
 exports.handlers = [
     {
         types: [8, 18],
-        pattern: /^what\s+is\s+([\d\s+\-*\/()\^]+)/i,
+        pattern: /^what\s+is\s+([\d\s+\-*\/()]+)[?.]?$/i,
         process: function(data, match) {
 
             // Normally eval() is bad - REALLY bad - but we can safely use it
@@ -34,7 +34,7 @@ exports.handlers = [
                 var result = eval(match[1]);
                 data.r(result);
             } catch(e) {
-                data.r("You have an error in your expression.");
+                data.r("I can't parse your expression (only +, -, *, and / operators are supported).");
             }
 
             return true;

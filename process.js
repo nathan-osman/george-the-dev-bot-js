@@ -26,8 +26,8 @@ var api = require('./api');
 
 // Each of the modules for George to load must be listed here
 var modules = [
+    'conversation',
     'favorites',
-    'greetings',
     'time'
 ];
 

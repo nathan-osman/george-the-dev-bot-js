@@ -29,15 +29,28 @@ exports.handlers = [
         types: [1, 8, 18],
         pattern: /^(h(?:i|ello|ey)(?:,?\s*(?:all|everyone))?[!.]?|o\/|\\o)$/i,
         process: function(data) {
-
-            // Send a simple reply
             data.r(util.oneOf(
                 "Hi!",
                 "Hello.",
                 "Howdy!",
                 "Greetings."
             ));
-
+            return true;
+        }
+    },
+    {
+        types: [1, 8, 18],
+        pattern: /^(?:good)?(?:bye|night)(?:,?\s*(?:all|everyone))?[!.]?/i,
+        process: function(data) {
+            data.r("See you later.");
+            return true;
+        }
+    },
+    {
+        types: [8, 18],
+        pattern: /\bthank(?:s|(?:-|\s+)you)\b/i,
+        process: function(data) {
+            data.r("You're welcome!");
             return true;
         }
     }

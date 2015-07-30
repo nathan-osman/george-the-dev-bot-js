@@ -55,7 +55,7 @@ exports.handlers = [
         process: function(data, match) {
 
             var thing = match[1].toLowerCase(),
-                value = match[2].toLowerCase().trim();
+                value = match[2].trim();
 
             // Store the new value
             var favorites = getFavorites(data.e.user_id);

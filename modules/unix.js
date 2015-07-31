@@ -28,11 +28,11 @@ var process = require('child_process'),
 exports.handlers = [
     {
         types: [8, 18],
-        pattern: /^ping\s+(.*)/i,
+        pattern: /^(ping6?)\s+([\w.:-]+)/i,
         process: function(data, match) {
 
             // Spawn a process to perform the ping
-            var child = process.spawn('ping', ['-c', '4', match[1]]);
+            var child = process.spawn(match[1].toLowerCase(), ['-c', '4', match[2]]);
 
             // Collect all of the output
             var stdout = '',
@@ -46,11 +46,7 @@ exports.handlers = [
 
             // When it completes, display the result
             child.on('exit', function(code) {
-                if(code) {
-                    data.r("`" + stderr + "`");
-                } else {
-                    data.s(util.pre(stdout));
-                }
+                data.s(util.pre((code ? stderr : stdout).trim()));
             });
 
             return true;

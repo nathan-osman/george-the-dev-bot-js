@@ -26,3 +26,8 @@
 exports.oneOf = function() {
     return arguments[Math.floor(Math.random() * arguments.length)];
 };
+
+// Converts multiline text to preformatted text.
+exports.pre = function(m) {
+    return "    " + m.replace(/\n/g, "\n    ");
+}

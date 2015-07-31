@@ -27,7 +27,7 @@ var util = require('./util');
 exports.handlers = [
     {
         types: [1, 8, 18],
-        pattern: /^(h(?:i|ello|ey)(?:,?\s*(?:all|everyone))?[!.]?|o\/|\\o)$/i,
+        pattern: /^(?:(?:hi|hello|hey|(?:good\s+)?(?:morning|afternoon|evening))(?:,?\s*(?:all|everyone))?[!.]?)/i,
         process: function(data) {
             data.r(util.oneOf(
                 "Hi!",
@@ -35,6 +35,14 @@ exports.handlers = [
                 "Howdy!",
                 "Greetings."
             ));
+            return true;
+        }
+    },
+    {
+        types: [1, 8, 18],
+        pattern: /^(\\o|o\/)$/i,
+        process: function(data, match) {
+            data.r(match[1] == "\\o" ? "o/" : "\\o");
             return true;
         }
     },

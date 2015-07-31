@@ -30,7 +30,6 @@ exports.handlers = [
         pattern: /\bbacon\b/i,
         process: function(data) {
             api.starMessage(data.e.message_id);
-            return true;
         }
     }
 ];

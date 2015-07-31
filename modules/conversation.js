@@ -27,7 +27,7 @@ var util = require('./util');
 exports.handlers = [
     {
         types: [1, 8, 18],
-        pattern: /^(?:(?:hi|hello|hey|(?:good\s+)?(?:morning|afternoon|evening))(?:,?\s*(?:all|everyone))?[!.]?)/i,
+        pattern: /^(?:(?:hi|hello|hey|(?:good\s+)?(?:morning|afternoon|evening))(?:,?\s*(?:all|everyone))?[!.]?)$/i,
         process: function(data) {
             data.r(util.oneOf(
                 "Hi!",

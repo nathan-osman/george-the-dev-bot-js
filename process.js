@@ -28,9 +28,11 @@ var api = require('./api');
 var modules = [
     'conversation',
     'favorites',
+    'fun',
     'manpage',
     'math',
-    'time'
+    'time',
+    'unix'  // TODO: disable this on other platforms
 ];
 
 // Build a list of handlers from each of the modules

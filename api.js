@@ -145,6 +145,11 @@ exports.initialize = function(success, error, callback) {
                             }
                         });
                     };
+
+                    // Indicate an error when the socket is interrupted
+                    socket.onerror = function(e) {
+                        console.log(e.message);
+                    };
                 },
                 type: 'POST',
                 url: '/ws-auth'

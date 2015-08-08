@@ -36,7 +36,7 @@ exports.handlers = [
                     "to you if I am able to understand your sentence.");
             return true;
         }
-    }
+    },
     {
         types: [1, 8, 18],
         pattern: /^(?:(?:hi|hello|hey|(?:good\s+)?(?:morning|afternoon|evening))(?:,?\s*(?:all|everyone))?[!.]?)$/i,

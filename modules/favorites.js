@@ -40,12 +40,12 @@ var FAVORITES = {
 
 // Retrieve a user's current list of favorites
 function getFavorites(id) {
-    return JSON.parse(localStorage.getItem('favorites-' + id) || "{}");
+    return util.dataRead('favorites-' + id) || {};
 }
 
 // Store a user's list of favorites
 function setFavorites(id, favorites) {
-    localStorage.setItem('favorites-' + id, JSON.stringify(favorites));
+    util.dataWrite('favorites-' + id, favorites);
 }
 
 exports.handlers = [

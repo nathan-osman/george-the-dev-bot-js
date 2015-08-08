@@ -26,6 +26,18 @@ var util = require('./util');
 
 exports.handlers = [
     {
+        types: [8, 18],
+        pattern: /^help$/i,
+        process: function(data) {
+            data.r("Allow me to introduce myself. My name is George Edison. " +
+                    "I am an experimental bot created by [Nathan Osman]" +
+                    "(http://chat.stackexchange.com/users/1345/nathan-osman)." +
+                    "Please talk to me in natural English and I will respond " +
+                    "to you if I am able to understand your sentence.");
+            return true;
+        }
+    }
+    {
         types: [1, 8, 18],
         pattern: /^(?:(?:hi|hello|hey|(?:good\s+)?(?:morning|afternoon|evening))(?:,?\s*(?:all|everyone))?[!.]?)$/i,
         process: function(data) {

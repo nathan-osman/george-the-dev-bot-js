@@ -32,7 +32,8 @@ var modules = [
     'manpage',
     'math',
     'time',
-    'unix'  // TODO: disable this on other platforms
+    'unix',  // TODO: disable this on other platforms
+    'wikipedia'
 ];
 
 // Build a list of handlers from each of the modules

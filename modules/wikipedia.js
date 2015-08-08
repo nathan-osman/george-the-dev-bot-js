@@ -48,6 +48,8 @@ exports.handlers = [
                         data.r("Sorry, but I wasn't able to find anything.");
                     }
                 }
+
+                return true;
             });
         }
     }

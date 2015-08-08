@@ -48,7 +48,7 @@ exports.handlers = [
     },
     {
         types: [1, 8, 18],
-        pattern: /^(?:good)?(?:bye|night)(?:,?\s*(?:all|everyone))?[!.]?/i,
+        pattern: /^(?:good\s?)?(?:bye|night)(?:,?\s*(?:all|everyone))?[!.]?/i,
         process: function(data) {
             data.r("See you later.");
             return true;

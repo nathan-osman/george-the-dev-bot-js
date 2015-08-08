@@ -22,7 +22,8 @@
  * IN THE SOFTWARE.
  */
 
-var api = require('../api');
+var api = require('../api'),
+    lastMention = 0;
 
 exports.handlers = [
     {
@@ -30,6 +31,25 @@ exports.handlers = [
         pattern: /\bbacon\b/i,
         process: function(data) {
             api.starMessage(data.e.message_id);
+        }
+    },
+    {
+        types: [1],
+        pattern: /\b(politic(?:s|al)|gun\s+control)\b/i,
+        process: function(data, match) {
+
+            // In order to keep this from getting out of control, don't do
+            // anything if we replied within the last hour
+            var now = new Date().getTime();
+
+            if(now - lastMention > 3600000) {
+                data.s("It has proudly been ---" + (Math.ceil(Math.random() * 29) + 11) +
+                        "--- 0 days since \"" + match[1].toLowerCase() +
+                        "\" was last mentioned. Time to reset the clock again. ಠ_ಠ");
+                lastMention = now;
+            }
+
+            return true;
         }
     }
 ];

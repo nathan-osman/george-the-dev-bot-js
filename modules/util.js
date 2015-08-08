@@ -22,6 +22,16 @@
  * IN THE SOFTWARE.
  */
 
+// Read a value from localStorage
+exports.dataRead = function(key) {
+    return JSON.parse(localStorage.getItem(key) || "null");
+};
+
+// Write a value to localStorage
+exports.dataWrite = function(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+};
+
 // Selects an item from among the function arguments at random.
 exports.oneOf = function() {
     return arguments[Math.floor(Math.random() * arguments.length)];
@@ -30,4 +40,4 @@ exports.oneOf = function() {
 // Converts multiline text to preformatted text.
 exports.pre = function(m) {
     return "    " + m.replace(/\n/g, "\n    ");
-}
+};

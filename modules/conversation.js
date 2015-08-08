@@ -31,7 +31,7 @@ exports.handlers = [
         process: function(data) {
             data.r("Allow me to introduce myself. My name is George Edison. " +
                     "I am an experimental bot created by [Nathan Osman]" +
-                    "(http://chat.stackexchange.com/users/1345/nathan-osman)." +
+                    "(http://chat.stackexchange.com/users/1345/nathan-osman). " +
                     "Please talk to me in natural English and I will respond " +
                     "to you if I am able to understand your sentence.");
             return true;

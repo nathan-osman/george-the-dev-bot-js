@@ -73,28 +73,5 @@ exports.handlers = [
             data.r("You're welcome!");
             return true;
         }
-    },
-    {
-        types: [3],
-        pattern: /^$/,
-        process: function(data) {
-
-            // Check to see if this user has already been greeted
-            var userList = util.dataRead('greetings-' + data.e.room_id) || [];
-
-            // If not, then greet them
-            if(userList.indexOf(data.e.user_id) == -1) {
-
-                var roomName = data.e.room_name.replace(/^the/i, '').replace(/room$/i, '');
-                data.s("Welcome to the " + roomName + " room, @" +
-                        data.e.user_name.replace(/\s/g, '') + "!");
-
-                // Remember not to greet them again
-                userList.push(data.e.user_id);
-                util.dataWrite('greetings-' + data.e.room_id, userList);
-            }
-
-            return true;
-        }
     }
 ];

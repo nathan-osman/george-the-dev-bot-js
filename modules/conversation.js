@@ -62,7 +62,9 @@ exports.handlers = [
         types: [1, 8, 18],
         pattern: /^(?:good\s?)?(?:bye|night)(?:,?\s*(?:all|everyone))?[!.]?/i,
         process: function(data) {
-            data.r("See you later.");
+            if(data.m.search(/@/) == -1) {
+                data.r("See you later.");
+            }
             return true;
         }
     },

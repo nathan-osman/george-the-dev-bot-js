@@ -33,6 +33,13 @@ exports.handlers = [
         pattern: /^wh(?:at|o)\s+(?:was|is|were|are)\s+(.*[^?.])/i,
         process: function(data, match) {
 
+            if(match[1].toLowerCase() == "love" || match[1].toLowerCase() == "love?")
+            {
+            	data.r("Baby don't hurt me. Don't hurt me no more!");
+
+            	return true;
+            }
+
             // Open the search page
             searchPage.open(searchUrl + encodeURIComponent(match[1]), function(status) {
 

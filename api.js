@@ -99,58 +99,71 @@ exports.initialize = function(success, error, callback) {
 
         // Create the WebSocket connection
         chatPage.evaluate(function() {
+
+            // Process a message received from the socket
+            function processMessage(e) {
+                $.each(JSON.parse(e.data), function(key, value) {
+
+                    // Each response includes events for all of the
+                    // rooms that we're in, leading to duplication - so
+                    // make sure that events are only processed for the
+                    // room that they were posted to
+                    var match = key.match(/r(\d+)/);
+                    if(match && 'e' in value) {
+
+                        // Problem number two - direct messages (type 8
+                        // and 18) are also sent as type 1 - so make
+                        // sure only the type 8/18 events propagate
+                        var seen = {};
+
+                        // Build a set of all non-1 events
+                        $.each(value.e, function(i, e) {
+                            if(e.event_type != 1) {
+                                seen[e.message_id] = null;
+                            }
+                        });
+
+                        // Send all events *except* type 1 *if* the
+                        // message ID was seen with another type
+                        $.each(value.e, function(i, e) {
+                            if(e.room_id == match[1] &&
+                                    (e.event_type != 1 ||
+                                    !(e.message_id in seen))) {
+                                window.callPhantom(e);
+                            }
+                        });
+                    }
+                });
+            }
+
+            // Create the websocket connection
+            function connectToSocket(data) {
+                // Create the WebSocket connection, ensuring no old
+                // messages are received by passing a large value
+                var socket = new WebSocket(data.url + '?l=999999999999');
+
+                // Invoke the callback whenever a new event arrives
+                socket.onmessage = processMessage;
+
+                // Reconnect when the socket is closed
+                socket.onclose = function(e) {
+                    console.log("WebSocket closed by server");
+                    setTimeout(connectToSocket, 60000, data);
+                };
+
+                // Indicate an error when the socket is interrupted
+                socket.onerror = function(e) {
+                    console.log(e.message);
+                    setTimeout(connectToSocket, 60000, data);
+                };
+            }
+
             $.ajax({
                 data: {
                     fkey: fkey().fkey,
                     roomid: 1
                 },
-                success: function(data) {
-
-                    // Create the WebSocket connection, ensuring no old
-                    // messages are received by passing a large value
-                    var socket = new WebSocket(data.url + '?l=999999999999');
-
-                    // Invoke the callback whenever a new event arrives
-                    socket.onmessage = function(e) {
-                        $.each(JSON.parse(e.data), function(key, value) {
-
-                            // Each response includes events for all of the
-                            // rooms that we're in, leading to duplication - so
-                            // make sure that events are only processed for the
-                            // room that they were posted to
-                            var match = key.match(/r(\d+)/);
-                            if(match && 'e' in value) {
-
-                                // Problem number two - direct messages (type 8
-                                // and 18) are also sent as type 1 - so make
-                                // sure only the type 8/18 events propagate
-                                var seen = {};
-
-                                // Build a set of all non-1 events
-                                $.each(value.e, function(i, e) {
-                                    if(e.event_type != 1) {
-                                        seen[e.message_id] = null;
-                                    }
-                                });
-
-                                // Send all events *except* type 1 *if* the
-                                // message ID was seen with another type
-                                $.each(value.e, function(i, e) {
-                                    if(e.room_id == match[1] &&
-                                            (e.event_type != 1 ||
-                                            !(e.message_id in seen))) {
-                                        window.callPhantom(e);
-                                    }
-                                });
-                            }
-                        });
-                    };
-
-                    // Indicate an error when the socket is interrupted
-                    socket.onerror = function(e) {
-                        console.log(e.message);
-                    };
-                },
+                success: connectToSocket,
                 type: 'POST',
                 url: '/ws-auth'
             });

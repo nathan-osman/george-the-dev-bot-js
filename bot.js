@@ -40,8 +40,11 @@ function error(message) {
     phantom.exit();
 }
 
+// Load the modules
+process.loadModules(config.modules);
+
 // Perform login
-login.login(config.email, config.password, function() {
+login.login(config.auth.email, config.auth.password, function() {
 
     console.log("[INFO] authorization complete");
 

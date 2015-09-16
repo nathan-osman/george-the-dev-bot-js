@@ -22,28 +22,21 @@
  * IN THE SOFTWARE.
  */
 
-var api = require('./api');
+var api = require('./api'),
+    handlers = [];
 
-// Each of the modules for George to load must be listed here
-var modules = [
-    'conversation',
-    'favorites',
-    'fun',
-    'manpage',
-    'math',
-    'time',
-    'unix',  // TODO: disable this on other platforms
-    'wikipedia'
-];
+// Load the specified list of modules.
+exports.loadModules = function(modules) {
 
-// Build a list of handlers from each of the modules
-var handlers = [];
-for(var i = 0; i < modules.length; ++i) {
-    handlers.push.apply(handlers, require('./modules/' + modules[i]).handlers);
-}
+    // Build a list of handlers from each of the modules
+    for(var i = 0; i < modules.length; ++i) {
+        handlers.push.apply(handlers, require('./modules/' + modules[i]).handlers);
+    }
 
-console.log("[INFO] loaded " + handlers.length +
-    " handler(s) from " + modules.length + " module(s).");
+    // Indicate what was loaded
+    console.log("[INFO] loaded " + handlers.length +
+        " handler(s) from " + modules.length + " module(s).");
+};
 
 // Process the provided event by running it through the list of handlers. The
 // first handler that matches will be used to process the event.

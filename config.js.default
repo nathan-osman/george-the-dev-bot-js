@@ -22,7 +22,22 @@
  * IN THE SOFTWARE.
  */
 
-// Customize these values as necessary
-// Customize these values as necessary
-exports.email = '';
-exports.password = '';
+// These values must be customized in order to run the bot, though they are not
+// required for the unit tests - currently, only Stack Exchange auth is
+// supported
+exports.auth = {
+    email: '',
+    password: '',
+};
+
+// Only the modules listed here will be loaded and in the order specified
+exports.modules = [
+    'conversation',
+    'favorites',
+    'fun',
+    'manpage',
+    'math',
+    'time',
+    'unix',
+    'wikipedia'
+];
